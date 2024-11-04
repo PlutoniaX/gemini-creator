@@ -134,7 +134,7 @@ if st.button("Start"):
                         st.write(result)
                     else:
                         st.error("Failed to generate post. Please try again.")
-            elif operation == "Custom Prompt":
+            elif operation == "CUSTOM":
                 if custom_prompt:
                     with st.spinner("Generating response..."):
                         custom_model = get_model(custom_prompt)

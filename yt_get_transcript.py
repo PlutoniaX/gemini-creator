@@ -71,11 +71,11 @@ def get_transcript_from_url(youtube_url):
     else:
         return 'Invalid YouTube URL'
 
-# # Example usage (commented out)
-# def main():
-#     youtube_url = 'https://youtu.be/as1Zw1uyGuk?feature=shared'  # Replace with your actual YouTube URL
-#     transcript = get_transcript_from_url(youtube_url)
-#     print(transcript)
+# Example usage (commented out)
+def main():
+    youtube_url = 'https://youtu.be/wmz6Pi2RCCo?feature=shared'  # Replace with your actual YouTube URL
+    transcript = get_transcript_from_url(youtube_url)
+    print(transcript)
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
