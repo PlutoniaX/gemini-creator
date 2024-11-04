@@ -41,8 +41,8 @@ def generate_flash(prompt, model):
         return None
 
 # Streamlit UI
-st.title("Content Remixer Pro")
-st.write("Repurpose content with ease using Gemini AI")
+st.title("Vectra")
+st.write("Where raw ideas are forged into impactful insights.")
 # Input selection menu
 input_type = option_menu(
     menu_title=None,
