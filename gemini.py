@@ -46,21 +46,23 @@ st.write("Where raw ideas are forged into impactful insights.")
 # Input selection menu
 input_type = option_menu(
     menu_title=None,
-    options=["Upload Files", "Add URL", "Enter Text"],
-    icons=["cloud-upload", "link", "file-text"],
+    # options=["Upload Files", "Add URL", "Enter Text"],
+    # icons=["cloud-upload", "link", "file-text"],
+    options=["URL", "Text"],
+    icons=["link", "file-text"],
     default_index=0,
     orientation="horizontal"
 )
 
-# Handle different input types
-if input_type == "Upload Files":
-    files = st.file_uploader("Upload PDF, EPUB or TXT files:", ["pdf", "epub", "txt"], accept_multiple_files=True)
-    user_input = None
-    if files:
-        # Process uploaded files here
-        pass
+# # Handle different input types
+# if input_type == "Upload Files":
+#     files = st.file_uploader("Upload PDF, EPUB or TXT files:", ["pdf", "epub", "txt"], accept_multiple_files=True)
+#     user_input = None
+#     if files:
+#         # Process uploaded files here
+#         pass
 
-elif input_type == "Add URL":
+if input_type == "URL":
     url = st.text_input("Enter YouTube or podcast URL:")
     user_input = None
     if url:
