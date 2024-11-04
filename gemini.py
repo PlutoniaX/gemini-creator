@@ -71,23 +71,8 @@ if input_type == "URL":
             transcript = get_transcript_from_url(url)
             if transcript != 'Invalid YouTube URL':
                 if transcript == 'Transcripts are disabled for this video.':
-                    # Get audio and convert to text using Gemini
-                    with st.spinner("Transcripts disabled. Converting audio to text..."):
-                        uploaded_file, safety_settings = download_youtube_audio(url)
-                        if uploaded_file:
-                            model = genai.GenerativeModel('gemini-1.5-flash')
-                            response = model.generate_content(
-                                ["Generate a transcript of this audio.", uploaded_file],
-                                safety_settings=safety_settings
-                            )
-                            
-                            # Check if response has candidates before accessing text
-                            if response.candidates:
-                                user_input = response.text
-                            else:
-                                st.error("No valid response generated. Please try again.")
-                        else:
-                            st.error("Could not process audio. Please try again.")
+                    st.info("Transcripts are disabled. Audio will be processed when you click Start.")
+                    user_input = {"type": "audio", "url": url}
                 else:
                     user_input = transcript
             else:
@@ -100,53 +85,74 @@ else:  # Enter Text
 
 # Dropdown for selecting operation
 operation = st.selectbox(
-    "Choose operation",
-    ["Generate Summary", "Write Post", "Write Essay", "Custom Prompt"]
+    "Choose operation:",
+    ["Generate Summary", "Write Post", "Write Essay", "CUSTOM"]
 )
 
 # Custom prompt input if selected
 custom_prompt = ""
-if operation == "Custom Prompt":
-    custom_prompt = st.text_area("Enter your custom system prompt:", height=100)
+if operation == "CUSTOM":
+    custom_prompt = st.text_area("Enter your custom prompt:", height=100)
 
 # Single button for all operations
 if st.button("Start"):
     if user_input:
-        if operation == "Generate Summary":
-            with st.spinner("Generating summary..."):
-                result = generate_flash(user_input, summary_model)
-                if result:
-                    st.write("### Summary:")
-                    st.write(result)
+        # Handle audio processing if needed
+        if isinstance(user_input, dict) and user_input["type"] == "audio":
+            with st.spinner("Converting audio to text..."):
+                uploaded_file, safety_settings = download_youtube_audio(user_input["url"])
+                if uploaded_file:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    response = model.generate_content(
+                        ["Generate a transcript of this audio.", uploaded_file],
+                        safety_settings=safety_settings
+                    )
+                    
+                    if response.candidates:
+                        user_input = response.text
+                    else:
+                        st.error("No valid response generated. Please try again.")
+                        user_input = None
                 else:
-                    st.error("Failed to generate summary. Please try again.")
-        elif operation == "Write Post":
-            with st.spinner("Writing post..."):
-                result = generate_flash(user_input, post_model)
-                if result:
-                    st.write("### Viral Post:")
-                    st.write(result)
-                else:
-                    st.error("Failed to generate post. Please try again.")
-        elif operation == "Custom Prompt":
-            if custom_prompt:
-                with st.spinner("Generating response..."):
-                    custom_model = get_model(custom_prompt)
-                    result = generate_flash(user_input, custom_model)
+                    st.error("Could not process audio. Please try again.")
+                    user_input = None
+
+        if user_input:  # Continue only if we have valid input
+            if operation == "Generate Summary":
+                with st.spinner("Generating summary..."):
+                    result = generate_flash(user_input, summary_model)
                     if result:
-                        st.write("### Response:")
+                        st.write("### Summary:")
                         st.write(result)
                     else:
-                        st.error("Failed to generate response. Please try again.")
-            else:
-                st.warning("Please enter a custom prompt first.")
-        else:  # Write Essay
-            with st.spinner("Writing essay..."):
-                result = generate_flash(user_input, essay_model)
-                if result:
-                    st.write("### Essay:")
-                    st.write(result)
+                        st.error("Failed to generate summary. Please try again.")
+            elif operation == "Write Post":
+                with st.spinner("Writing post..."):
+                    result = generate_flash(user_input, post_model)
+                    if result:
+                        st.write("### Viral Post:")
+                        st.write(result)
+                    else:
+                        st.error("Failed to generate post. Please try again.")
+            elif operation == "Custom Prompt":
+                if custom_prompt:
+                    with st.spinner("Generating response..."):
+                        custom_model = get_model(custom_prompt)
+                        result = generate_flash(user_input, custom_model)
+                        if result:
+                            st.write("### Response:")
+                            st.write(result)
+                        else:
+                            st.error("Failed to generate response. Please try again.")
                 else:
-                    st.error("Failed to generate essay. Please try again.")
+                    st.warning("Please enter a custom prompt first.")
+            else:  # Write Essay
+                with st.spinner("Writing essay..."):
+                    result = generate_flash(user_input, essay_model)
+                    if result:
+                        st.write("### Essay:")
+                        st.write(result)
+                    else:
+                        st.error("Failed to generate essay. Please try again.")
     else:
         st.warning("Please enter some text first.")
