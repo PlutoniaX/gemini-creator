@@ -66,17 +66,28 @@ if input_type == "URL":
     url = st.text_input("Enter YouTube or podcast URL:")
     user_input = None
     if url:
+        # Initialize session state for caching if it doesn't exist
+        if 'cached_transcripts' not in st.session_state:
+            st.session_state.cached_transcripts = {}
+            
         # Process URL if it's a YouTube link
         if 'youtube.com' in url or 'youtu.be' in url:
-            transcript = get_transcript_from_url(url)
-            if transcript != 'Invalid YouTube URL':
-                if transcript == 'Transcripts are disabled for this video.':
-                    st.info("Transcripts are disabled. Audio will be processed when you click Start.")
-                    user_input = {"type": "audio", "url": url}
-                else:
-                    user_input = transcript
+            # Check if we already have this URL's transcript cached
+            if url in st.session_state.cached_transcripts:
+                user_input = st.session_state.cached_transcripts[url]
+                st.info("Using cached transcript")
             else:
-                st.error("Could not process YouTube URL. Please check the URL and try again.")
+                transcript = get_transcript_from_url(url)
+                if transcript != 'Invalid YouTube URL':
+                    if transcript == 'Transcripts are disabled for this video.':
+                        st.info("Transcripts are disabled. Audio will be processed when you click Start.")
+                        user_input = {"type": "audio", "url": url}
+                    else:
+                        user_input = transcript
+                        # Cache the transcript
+                        st.session_state.cached_transcripts[url] = transcript
+                else:
+                    st.error("Could not process YouTube URL. Please check the URL and try again.")
         else:
             st.warning("Currently only YouTube URLs are supported.")
 
@@ -99,23 +110,30 @@ if st.button("Start"):
     if user_input:
         # Handle audio processing if needed
         if isinstance(user_input, dict) and user_input["type"] == "audio":
-            with st.spinner("Converting audio to text..."):
-                uploaded_file, safety_settings = download_youtube_audio(user_input["url"])
-                if uploaded_file:
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(
-                        ["Generate a transcript of this audio.", uploaded_file],
-                        safety_settings=safety_settings
-                    )
-                    
-                    if response.candidates:
-                        user_input = response.text
+            # Check if we already have this URL's transcript cached
+            if user_input["url"] in st.session_state.cached_transcripts:
+                user_input = st.session_state.cached_transcripts[user_input["url"]]
+                st.info("Using cached transcript")
+            else:
+                with st.spinner("Converting audio to text..."):
+                    uploaded_file, safety_settings = download_youtube_audio(user_input["url"])
+                    if uploaded_file:
+                        model = genai.GenerativeModel('gemini-1.5-flash')
+                        response = model.generate_content(
+                            ["Generate a transcript of this audio.", uploaded_file],
+                            safety_settings=safety_settings
+                        )
+                        
+                        if response.candidates:
+                            user_input = response.text
+                            # Cache the transcript
+                            st.session_state.cached_transcripts[user_input["url"]] = user_input
+                        else:
+                            st.error("No valid response generated. Please try again.")
+                            user_input = None
                     else:
-                        st.error("No valid response generated. Please try again.")
+                        st.error("Could not process audio. Please try again.")
                         user_input = None
-                else:
-                    st.error("Could not process audio. Please try again.")
-                    user_input = None
 
         if user_input:  # Continue only if we have valid input
             if operation == "Generate Summary":
