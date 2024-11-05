@@ -70,15 +70,23 @@ if input_type == "URL":
             st.session_state.cached_transcripts = {}
             
         if 'youtube.com' in url or 'youtu.be' in url:
+            st.write("DEBUG: Processing YouTube URL")
+            
             if url in st.session_state.cached_transcripts:
+                st.write("DEBUG: Found in cache")
                 user_input = st.session_state.cached_transcripts[url]
                 st.info("Using cached transcript")
             else:
+                st.write("DEBUG: Not in cache, fetching transcript")
                 result = get_transcript_from_url(url)
+                st.write(f"DEBUG: Transcript result - Success: {result.success}, Error Type: {result.error_type}")
+                
                 if result.success:
+                    st.write("DEBUG: Transcript fetch successful")
                     user_input = result.content
                     st.session_state.cached_transcripts[url] = result.content
                 elif result.error_type == "DISABLED":
+                    st.write("DEBUG: Transcripts disabled")
                     st.info("Transcripts are disabled. Audio will be processed when you click Start.")
                     user_input = {"type": "audio", "url": url}
                 elif result.error_type == "INVALID_URL":

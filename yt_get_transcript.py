@@ -45,19 +45,23 @@ class TranscriptResult:
 def download_transcript(video_id):
     """Download and return the transcript for a given YouTube video ID."""
     try:
-        # Try to get the transcript in the default language
+        print(f"DEBUG: Attempting to get transcript for video {video_id}")  # Debug print
         transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
         transcript = '\n'.join([entry['text'] for entry in transcript_list])
+        print("DEBUG: Successfully got transcript")  # Debug print
         return TranscriptResult(success=True, content=transcript)
     except TranscriptsDisabled:
+        print("DEBUG: TranscriptsDisabled exception caught")  # Debug print
         return TranscriptResult(success=False, error_type="DISABLED")
     except Exception as e:
+        print(f"DEBUG: First attempt failed with error: {str(e)}")  # Debug print
         try:
-            # If default language fails, try Chinese (simplified)
             transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['zh-CN'])
             transcript = '\n'.join([entry['text'] for entry in transcript_list])
+            print("DEBUG: Successfully got Chinese transcript")  # Debug print
             return TranscriptResult(success=True, content=transcript)
         except Exception as e:
+            print(f"DEBUG: Both attempts failed with error: {str(e)}")  # Debug print
             return TranscriptResult(success=False, error_type="ERROR")
 
 def get_transcript_from_url(youtube_url):
