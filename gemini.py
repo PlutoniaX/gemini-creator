@@ -15,7 +15,10 @@ genai.configure(api_key=os.getenv('GOOGLE_GEMINI_API_KEY'))
 def get_model(system_instruction):
     return genai.GenerativeModel(
         model_name='gemini-1.5-flash',
-        system_instruction=system_instruction
+        system_instruction=system_instruction,
+        generation_config=genai.types.GenerationConfig(
+            temperature=0
+        )
     )
 
 # Initialize models with different system instructions
@@ -33,16 +36,25 @@ essay_model = get_model(essay_instructions)
 
 def generate_flash(prompt, model):
     try:
-        # Generate content using Gemini
-        response = model.generate_content(prompt)
+        # Generate content using Gemini with temperature=0
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0
+            )
+        )
         return response.text
     except Exception as e:
         print(f"Error generating content: {str(e)}")
         return None
 
 # Streamlit UI
-st.title("Vectra")
-st.write("Where raw ideas are forged into impactful insights.")
+
+st.markdown('<h1 style="text-align: center; padding-left: 30px;">✨Vectra✨</h1>', unsafe_allow_html=True)
+st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">read • write • faster</h3>', unsafe_allow_html=True)
+
+st.write("")
+st.write("Pick a source:")
 # Input selection menu
 input_type = option_menu(
     menu_title=None,
@@ -72,7 +84,6 @@ if input_type == "URL":
         if 'youtube.com' in url or 'youtu.be' in url:
             if url in st.session_state.cached_transcripts:
                 user_input = st.session_state.cached_transcripts[url]
-                st.info("Using cached transcript")
             else:
                 result = get_transcript_from_url(url)
                 
@@ -81,10 +92,10 @@ if input_type == "URL":
                     st.session_state.cached_transcripts[url] = result.content
                 else:
                     if result.error_type == "DISABLED":
-                        st.info("Transcripts are disabled. Audio will be processed when you click Start.")
+                        st.info("Transcript not available. Will transcribe audio first when you click Start.")
                         user_input = {"type": "audio", "url": url}
                     else:
-                        st.error("Could not process transcript. Falling back to audio processing.")
+                        st.info("Transcript not available. Will transcribe audio first when you click Start.")
                         user_input = {"type": "audio", "url": url}
         else:
             st.warning("Currently only YouTube URLs are supported.")
@@ -95,16 +106,29 @@ else:  # Enter Text
 # Dropdown for selecting operation
 operation = st.selectbox(
     "Choose operation:",
-    ["Generate Summary", "Write Post", "Write Essay", "CUSTOM"]
+    [
+        "Summarise Content",
+        "Write Post",
+        "Write Essay",
+        "CUSTOM PROMPT"
+    ]
 )
 
 # Custom prompt input if selected
 custom_prompt = ""
-if operation == "CUSTOM":
+if operation == "CUSTOM PROMPT":
     custom_prompt = st.text_area("Enter your custom prompt:", height=100)
 
-# Single button for all operations
-if st.button("Start"):
+st.write("")
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    start_button = st.button(
+        "Start",
+        icon=None,
+        use_container_width=True
+    )
+
+if start_button:
     if user_input:
         # Handle audio processing if needed
         if isinstance(user_input, dict) and user_input["type"] == "audio":
@@ -114,13 +138,16 @@ if st.button("Start"):
                 user_input = st.session_state.cached_transcripts[original_url]
                 st.info("Using cached transcript")
             else:
-                with st.spinner("Converting audio to text..."):
+                with st.spinner("Converting audio to text. Please be patient..."):
                     uploaded_file, safety_settings = download_youtube_audio(original_url)
                     if uploaded_file:
                         model = genai.GenerativeModel('gemini-1.5-flash')
                         response = model.generate_content(
                             ["Generate a transcript of this audio.", uploaded_file],
-                            safety_settings=safety_settings
+                            safety_settings=safety_settings,
+                            generation_config=genai.types.GenerationConfig(
+                                temperature=0
+                            )
                         )
                         
                         if response.candidates:
@@ -128,48 +155,52 @@ if st.button("Start"):
                             # Cache the transcript using the original URL
                             st.session_state.cached_transcripts[original_url] = user_input
                         else:
-                            st.error("No valid response generated. Please try again.")
+                            st.error("No valid response generated. Please refresh browser and try again.")
                             user_input = None
                     else:
-                        st.error("Could not process audio. Please try again.")
+                        st.error("Could not process audio. Please refresh browser and try again.")
                         user_input = None
 
         if user_input:  # Continue only if we have valid input
-            if operation == "Generate Summary":
+            if operation == "Summarise Content":
                 with st.spinner("Generating summary..."):
                     result = generate_flash(user_input, summary_model)
                     if result:
-                        st.write("### Summary:")
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Summary:</h3>', unsafe_allow_html=True)
                         st.write(result)
                     else:
-                        st.error("Failed to generate summary. Please try again.")
+                        st.error("Failed to generate summary. Please refresh browser and try again.")
             elif operation == "Write Post":
                 with st.spinner("Writing post..."):
                     result = generate_flash(user_input, post_model)
                     if result:
-                        st.write("### Viral Post:")
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Post:</h3>', unsafe_allow_html=True)
                         st.write(result)
                     else:
-                        st.error("Failed to generate post. Please try again.")
-            elif operation == "CUSTOM":
+                        st.error("Failed to generate post. Please refresh browser and try again.")
+            elif operation == "CUSTOM PROMPT":
                 if custom_prompt:
                     with st.spinner("Generating response..."):
                         custom_model = get_model(custom_prompt)
                         result = generate_flash(user_input, custom_model)
                         if result:
-                            st.write("### Response:")
+                            st.write("---")
+                            st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Response:</h3>', unsafe_allow_html=True)
                             st.write(result)
                         else:
-                            st.error("Failed to generate response. Please try again.")
+                            st.error("Failed to generate response. Please refresh browser and try again.")
                 else:
                     st.warning("Please enter a custom prompt first.")
             else:  # Write Essay
                 with st.spinner("Writing essay..."):
                     result = generate_flash(user_input, essay_model)
                     if result:
-                        st.write("### Essay:")
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Essay:</h3>', unsafe_allow_html=True)
                         st.write(result)
                     else:
-                        st.error("Failed to generate essay. Please try again.")
+                        st.error("Failed to generate essay. Please refresh browser and try again.")
     else:
         st.warning("Please enter some text first.")
