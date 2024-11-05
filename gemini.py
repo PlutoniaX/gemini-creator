@@ -80,20 +80,19 @@ if input_type == "URL":
                 st.write("DEBUG: Not in cache, fetching transcript")
                 result = get_transcript_from_url(url)
                 st.write(f"DEBUG: Raw result object: {vars(result)}")
-                st.write(f"DEBUG: Transcript result - Success: {result.success}, Error Type: {result.error_type}")
                 
-                if result.success:
+                if result.success and result.content:
                     st.write("DEBUG: Transcript fetch successful")
                     user_input = result.content
                     st.session_state.cached_transcripts[url] = result.content
-                elif result.error_type == "DISABLED":
-                    st.write("DEBUG: Transcripts disabled")
-                    st.info("Transcripts are disabled. Audio will be processed when you click Start.")
-                    user_input = {"type": "audio", "url": url}
-                elif result.error_type == "INVALID_URL":
-                    st.error("Could not process YouTube URL. Please check the URL and try again.")
                 else:
-                    st.error("An error occurred while fetching the transcript.")
+                    st.write(f"DEBUG: Transcript fetch failed with error type: {result.error_type}")
+                    if result.error_type == "DISABLED":
+                        st.info("Transcripts are disabled. Audio will be processed when you click Start.")
+                        user_input = {"type": "audio", "url": url}
+                    else:
+                        st.error("Could not process transcript. Falling back to audio processing.")
+                        user_input = {"type": "audio", "url": url}
         else:
             st.warning("Currently only YouTube URLs are supported.")
 
