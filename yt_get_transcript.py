@@ -5,6 +5,8 @@ from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, No
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qs
 import streamlit as st
+import subprocess
+import sys
 
 # Load environment variables
 load_dotenv()
@@ -74,6 +76,23 @@ def download_transcript(video_id):
         print(f"DEBUG 8: Unexpected error: {type(e)} - {str(e)}")
         return TranscriptResult(success=False, error_type="ERROR")
 
+def get_transcript_direct(video_id):
+    """Run transcript fetch in a separate Python process"""
+    script = f"""
+from youtube_transcript_api import YouTubeTranscriptApi
+try:
+    transcript = YouTubeTranscriptApi.get_transcript("{video_id}")
+    print("SUCCESS")
+    for entry in transcript:
+        print(entry['text'])
+except Exception as e:
+    print(f"ERROR: {{str(e)}}")
+"""
+    result = subprocess.run([sys.executable, '-c', script], 
+                          capture_output=True, 
+                          text=True)
+    return result.stdout
+
 def get_transcript_from_url(youtube_url):
     """Extract video ID from YouTube URL and get its transcript."""
     try:
@@ -92,38 +111,19 @@ def get_transcript_from_url(youtube_url):
         if not video_id:
             return TranscriptResult(success=False, error_type="INVALID_URL")
         
-        # Try to get transcript directly without constructing URL
-        try:
-            st.write("DEBUG: Attempting transcript fetch")
-            transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
-            
-            if transcript:
-                st.write("DEBUG: Transcript fetch successful")
-                text = '\n'.join([entry['text'] for entry in transcript])
-                return TranscriptResult(success=True, content=text)
-            else:
-                st.write("DEBUG: No transcript returned")
-                return TranscriptResult(success=False, error_type="ERROR")
+        # Run transcript fetch in separate process
+        output = get_transcript_direct(video_id)
+        st.write(f"DEBUG: Direct Python output: {output[:200]}")  # Show first 200 chars
+        
+        if "SUCCESS" in output:
+            # Process the transcript text
+            transcript_lines = output.split('\n')[1:]  # Skip the SUCCESS line
+            transcript_text = '\n'.join(line for line in transcript_lines if line.strip())
+            return TranscriptResult(success=True, content=transcript_text)
+        else:
+            st.write(f"DEBUG: Failed to get transcript: {output}")
+            return TranscriptResult(success=False, error_type="ERROR")
                 
-        except Exception as e:
-            st.write(f"DEBUG: First attempt failed: {type(e)} - {str(e)}")
-            
-            # Try alternative method with list_transcripts
-            try:
-                st.write("DEBUG: Attempting alternative transcript fetch")
-                transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-                available_transcripts = transcript_list.find_transcript(['en'])
-                
-                if available_transcripts:
-                    text = '\n'.join([entry['text'] for entry in available_transcripts.fetch()])
-                    return TranscriptResult(success=True, content=text)
-                else:
-                    return TranscriptResult(success=False, error_type="ERROR")
-                    
-            except Exception as e2:
-                st.write(f"DEBUG: Alternative attempt failed: {type(e2)} - {str(e2)}")
-                return TranscriptResult(success=False, error_type="ERROR")
-    
     except Exception as e:
         st.write(f"DEBUG: Unexpected error: {type(e)} - {str(e)}")
         return TranscriptResult(success=False, error_type="ERROR")
