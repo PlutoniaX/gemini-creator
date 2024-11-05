@@ -79,6 +79,7 @@ if input_type == "URL":
             else:
                 st.write("DEBUG: Not in cache, fetching transcript")
                 result = get_transcript_from_url(url)
+                st.write(f"DEBUG: Raw result object: {vars(result)}")
                 st.write(f"DEBUG: Transcript result - Success: {result.success}, Error Type: {result.error_type}")
                 
                 if result.success:
