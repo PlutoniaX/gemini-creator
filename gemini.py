@@ -66,28 +66,25 @@ if input_type == "URL":
     url = st.text_input("Enter YouTube or podcast URL:")
     user_input = None
     if url:
-        # Initialize session state for caching if it doesn't exist
         if 'cached_transcripts' not in st.session_state:
             st.session_state.cached_transcripts = {}
             
-        # Process URL if it's a YouTube link
         if 'youtube.com' in url or 'youtu.be' in url:
-            # Check if we already have this URL's transcript cached
             if url in st.session_state.cached_transcripts:
                 user_input = st.session_state.cached_transcripts[url]
                 st.info("Using cached transcript")
             else:
-                transcript = get_transcript_from_url(url)
-                if transcript != 'Invalid YouTube URL':
-                    if transcript == 'Transcripts are disabled for this video.':
-                        st.info("Transcripts are disabled. Audio will be processed when you click Start.")
-                        user_input = {"type": "audio", "url": url}
-                    else:
-                        user_input = transcript
-                        # Cache the transcript
-                        st.session_state.cached_transcripts[url] = transcript
-                else:
+                result = get_transcript_from_url(url)
+                if result.success:
+                    user_input = result.content
+                    st.session_state.cached_transcripts[url] = result.content
+                elif result.error_type == "DISABLED":
+                    st.info("Transcripts are disabled. Audio will be processed when you click Start.")
+                    user_input = {"type": "audio", "url": url}
+                elif result.error_type == "INVALID_URL":
                     st.error("Could not process YouTube URL. Please check the URL and try again.")
+                else:
+                    st.error("An error occurred while fetching the transcript.")
         else:
             st.warning("Currently only YouTube URLs are supported.")
 

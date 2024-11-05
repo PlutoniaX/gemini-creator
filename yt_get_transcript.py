@@ -36,24 +36,29 @@ def get_video_ids_and_titles_from_playlist(playlist_id):
         request = youtube.playlistItems().list_next(request, response)
     return video_ids_and_titles
 
+class TranscriptResult:
+    def __init__(self, success, content=None, error_type=None):
+        self.success = success
+        self.content = content
+        self.error_type = error_type
+
 def download_transcript(video_id):
     """Download and return the transcript for a given YouTube video ID."""
     try:
         # Try to get the transcript in the default language
         transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
         transcript = '\n'.join([entry['text'] for entry in transcript_list])
-        return transcript
+        return TranscriptResult(success=True, content=transcript)
     except TranscriptsDisabled:
-        return f'Transcripts are disabled for this video.'
+        return TranscriptResult(success=False, error_type="DISABLED")
     except Exception as e:
         try:
             # If default language fails, try Chinese (simplified)
             transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['zh-CN'])
             transcript = '\n'.join([entry['text'] for entry in transcript_list])
-            return transcript
+            return TranscriptResult(success=True, content=transcript)
         except Exception as e:
-            # If both attempts fail, return an error message
-            return f'An error occurred for video ID.'
+            return TranscriptResult(success=False, error_type="ERROR")
 
 def get_transcript_from_url(youtube_url):
     """Extract video ID from YouTube URL and get its transcript."""
@@ -69,13 +74,13 @@ def get_transcript_from_url(youtube_url):
     if video_id:
         return download_transcript(video_id)
     else:
-        return 'Invalid YouTube URL'
+        return TranscriptResult(success=False, error_type="INVALID_URL")
 
 # Example usage (commented out)
 def main():
     youtube_url = 'https://youtu.be/wmz6Pi2RCCo?feature=shared'  # Replace with your actual YouTube URL
     transcript = get_transcript_from_url(youtube_url)
-    print(transcript)
+    print(transcript.content)
 
 if __name__ == '__main__':
     main()
