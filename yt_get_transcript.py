@@ -106,14 +106,11 @@ def get_transcript_from_url(youtube_url):
             # Handle regular youtube.com URLs
             video_id = parse_qs(parsed_url.query).get('v', [None])[0]
         
-        st.write(f"DEBUG: Extracted video ID: {video_id}")
-        
         if not video_id:
             return TranscriptResult(success=False, error_type="INVALID_URL")
         
         # Run transcript fetch in separate process
         output = get_transcript_direct(video_id)
-        st.write(f"DEBUG: Direct Python output: {output[:200]}")  # Show first 200 chars
         
         if "SUCCESS" in output:
             # Process the transcript text
@@ -121,11 +118,9 @@ def get_transcript_from_url(youtube_url):
             transcript_text = '\n'.join(line for line in transcript_lines if line.strip())
             return TranscriptResult(success=True, content=transcript_text)
         else:
-            st.write(f"DEBUG: Failed to get transcript: {output}")
             return TranscriptResult(success=False, error_type="ERROR")
                 
     except Exception as e:
-        st.write(f"DEBUG: Unexpected error: {type(e)} - {str(e)}")
         return TranscriptResult(success=False, error_type="ERROR")
 
 # Example usage (commented out)
