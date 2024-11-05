@@ -45,24 +45,32 @@ class TranscriptResult:
 def download_transcript(video_id):
     """Download and return the transcript for a given YouTube video ID."""
     try:
-        # First, list available transcripts
+        print(f"DEBUG 1: Getting transcript list for video {video_id}")
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        
+        print(f"DEBUG 2: Available transcripts: {transcript_list.manual_generated_transcripts}")
+        print(f"DEBUG 2.1: Auto-generated transcripts: {transcript_list.generated_transcripts}")
         
         # Try English first
         try:
+            print("DEBUG 3: Attempting to find English transcript")
             transcript = transcript_list.find_transcript(['en'])
+            print("DEBUG 4: Found English transcript, fetching...")
             text = '\n'.join([entry['text'] for entry in transcript.fetch()])
             return TranscriptResult(success=True, content=text)
-        except NoTranscriptFound:
+        except NoTranscriptFound as e:
+            print(f"DEBUG 5: No English transcript found: {str(e)}")
             # If no English, try any available transcript
+            print("DEBUG 6: Trying to find any manual transcript")
             available = transcript_list.find_manually_created_transcript()
             text = '\n'.join([entry['text'] for entry in available.fetch()])
             return TranscriptResult(success=True, content=text)
             
-    except TranscriptsDisabled:
+    except TranscriptsDisabled as e:
+        print(f"DEBUG 7: TranscriptsDisabled error: {str(e)}")
         return TranscriptResult(success=False, error_type="DISABLED")
     except Exception as e:
-        print(f"DEBUG: Transcript error: {type(e)} - {str(e)}")
+        print(f"DEBUG 8: Unexpected error: {type(e)} - {str(e)}")
         return TranscriptResult(success=False, error_type="ERROR")
 
 def get_transcript_from_url(youtube_url):
@@ -72,12 +80,24 @@ def get_transcript_from_url(youtube_url):
     # Handle shortened youtu.be URLs
     if 'youtu.be' in parsed_url.netloc:
         video_id = parsed_url.path.lstrip('/')
+        # Remove any query parameters
+        video_id = video_id.split('?')[0]
     else:
         # Handle regular youtube.com URLs
         video_id = parse_qs(parsed_url.query).get('v', [None])[0]
     
+    print(f"DEBUG: Extracted video ID: {video_id}")  # Add this debug print
+    
     if video_id:
-        return download_transcript(video_id)
+        try:
+            # Try direct transcript fetch first
+            print("DEBUG: Trying direct transcript fetch")
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            return TranscriptResult(success=True, content='\n'.join([entry['text'] for entry in transcript]))
+        except Exception as e:
+            print(f"DEBUG: Direct fetch failed: {type(e)} - {str(e)}")
+            # If direct fetch fails, try the more detailed approach
+            return download_transcript(video_id)
     else:
         return TranscriptResult(success=False, error_type="INVALID_URL")
 
