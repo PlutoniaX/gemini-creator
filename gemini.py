@@ -110,13 +110,14 @@ if st.button("Start"):
     if user_input:
         # Handle audio processing if needed
         if isinstance(user_input, dict) and user_input["type"] == "audio":
+            original_url = user_input["url"]  # Store the URL before processing
             # Check if we already have this URL's transcript cached
-            if user_input["url"] in st.session_state.cached_transcripts:
-                user_input = st.session_state.cached_transcripts[user_input["url"]]
+            if original_url in st.session_state.cached_transcripts:
+                user_input = st.session_state.cached_transcripts[original_url]
                 st.info("Using cached transcript")
             else:
                 with st.spinner("Converting audio to text..."):
-                    uploaded_file, safety_settings = download_youtube_audio(user_input["url"])
+                    uploaded_file, safety_settings = download_youtube_audio(original_url)
                     if uploaded_file:
                         model = genai.GenerativeModel('gemini-1.5-flash')
                         response = model.generate_content(
@@ -126,8 +127,8 @@ if st.button("Start"):
                         
                         if response.candidates:
                             user_input = response.text
-                            # Cache the transcript
-                            st.session_state.cached_transcripts[user_input["url"]] = user_input
+                            # Cache the transcript using the original URL
+                            st.session_state.cached_transcripts[original_url] = user_input
                         else:
                             st.error("No valid response generated. Please try again.")
                             user_input = None
