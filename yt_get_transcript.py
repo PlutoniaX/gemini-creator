@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qs
-from streamlit import st
+import streamlit as st
 
 # Load environment variables
 load_dotenv()
