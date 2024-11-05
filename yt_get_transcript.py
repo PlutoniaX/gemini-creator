@@ -1,7 +1,7 @@
 # Import necessary libraries
 import os
 from googleapiclient.discovery import build
-from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qs
 
@@ -45,24 +45,25 @@ class TranscriptResult:
 def download_transcript(video_id):
     """Download and return the transcript for a given YouTube video ID."""
     try:
-        print(f"DEBUG: Attempting to get transcript for video {video_id}")  # Debug print
-        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-        transcript = '\n'.join([entry['text'] for entry in transcript_list])
-        print("DEBUG: Successfully got transcript")  # Debug print
-        return TranscriptResult(success=True, content=transcript)
+        # First, list available transcripts
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        
+        # Try English first
+        try:
+            transcript = transcript_list.find_transcript(['en'])
+            text = '\n'.join([entry['text'] for entry in transcript.fetch()])
+            return TranscriptResult(success=True, content=text)
+        except NoTranscriptFound:
+            # If no English, try any available transcript
+            available = transcript_list.find_manually_created_transcript()
+            text = '\n'.join([entry['text'] for entry in available.fetch()])
+            return TranscriptResult(success=True, content=text)
+            
     except TranscriptsDisabled:
-        print("DEBUG: TranscriptsDisabled exception caught")  # Debug print
         return TranscriptResult(success=False, error_type="DISABLED")
     except Exception as e:
-        print(f"DEBUG: First attempt failed with error: {str(e)}")  # Debug print
-        try:
-            transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['zh-CN'])
-            transcript = '\n'.join([entry['text'] for entry in transcript_list])
-            print("DEBUG: Successfully got Chinese transcript")  # Debug print
-            return TranscriptResult(success=True, content=transcript)
-        except Exception as e:
-            print(f"DEBUG: Both attempts failed with error: {str(e)}")  # Debug print
-            return TranscriptResult(success=False, error_type="ERROR")
+        print(f"DEBUG: Transcript error: {type(e)} - {str(e)}")
+        return TranscriptResult(success=False, error_type="ERROR")
 
 def get_transcript_from_url(youtube_url):
     """Extract video ID from YouTube URL and get its transcript."""
