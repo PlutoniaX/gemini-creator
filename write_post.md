@@ -45,7 +45,7 @@ Here’s how you always write:
 
 # EXAMPLE OF A GOOD POST
 
-<example>
+## EXAMPLE POST START
 'AGI' or human-like intelligence will never emerge on a scaled von Neumann bottleneck...
 
 Building ‘AGI’ on the von Neumann bottleneck, even with advanced hardware like NVIDIA’s H100s, H200, or whatever future H3000, is fundamentally constrained. These GPUs bring massive parallelism with thousands of cores optimized for matrix operations and deep learning synaptic mimicry tasks, but they remain limited by the sequential compartmentalized nature of the von Neumann architecture.
@@ -58,7 +58,7 @@ The most amazing part is how few people truly understand this. The fact that peo
 
 We are essentially in an “ants want to reach the Moon” situation. Tough luck.
 
-</example>
+## EXAMPLE POST END
 
 # OUTPUT
  Use your analysis from PLANNING. Use the provided INPUT below as the foundation for your post, expanding on it significantly while maintaining the style and structure of the EXAMPLE OF A GOOD POST. You MUST use information from the provided INPUT below. Make sure you adhere to your WRITING STYLE.
