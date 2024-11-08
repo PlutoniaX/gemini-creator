@@ -78,6 +78,11 @@ if input_type == "URL":
     url = st.text_input("Enter YouTube or podcast URL:")
     user_input = None
     if url:
+        # Clear cache if URL changes
+        if 'last_url' not in st.session_state or st.session_state.last_url != url:
+            st.session_state.cached_transcripts = {}
+            st.session_state.last_url = url
+            
         if 'cached_transcripts' not in st.session_state:
             st.session_state.cached_transcripts = {}
             
