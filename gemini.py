@@ -34,6 +34,10 @@ with open('write_essay.md', 'r') as f:
     essay_instructions = f.read()
 essay_model = get_model(essay_instructions)
 
+with open('write_notes.md', 'r') as f:
+    notes_instructions = f.read()
+notes_model = get_model(notes_instructions)
+
 def generate_flash(prompt, model):
     try:
         # Generate content using Gemini with temperature=0
@@ -115,6 +119,7 @@ operation = st.selectbox(
         "Summarise Content",
         "Write Post",
         "Write Essay",
+        "Write Notes",
         "CUSTOM PROMPT"
     ]
 )
@@ -185,6 +190,24 @@ if start_button:
                         st.write(result)
                     else:
                         st.error("Failed to generate post. Please refresh browser and try again.")
+            elif operation == "Write Essay":
+                with st.spinner("Writing essay..."):
+                    result = generate_flash(user_input, essay_model)
+                    if result:
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Essay:</h3>', unsafe_allow_html=True)
+                        st.write(result)
+                    else:
+                        st.error("Failed to generate essay. Please refresh browser and try again.")
+            elif operation == "Write Notes":
+                with st.spinner("Writing notes..."):
+                    result = generate_flash(user_input, notes_model)
+                    if result:
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Notes:</h3>', unsafe_allow_html=True)
+                        st.write(result)
+                    else:
+                        st.error("Failed to generate notes. Please refresh browser and try again.")
             elif operation == "CUSTOM PROMPT":
                 if custom_prompt:
                     with st.spinner("Generating response..."):
@@ -198,14 +221,5 @@ if start_button:
                             st.error("Failed to generate response. Please refresh browser and try again.")
                 else:
                     st.warning("Please enter a custom prompt first.")
-            else:  # Write Essay
-                with st.spinner("Writing essay..."):
-                    result = generate_flash(user_input, essay_model)
-                    if result:
-                        st.write("---")
-                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Essay:</h3>', unsafe_allow_html=True)
-                        st.write(result)
-                    else:
-                        st.error("Failed to generate essay. Please refresh browser and try again.")
     else:
         st.warning("Please enter some text first.")
