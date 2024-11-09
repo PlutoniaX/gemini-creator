@@ -105,7 +105,7 @@ if input_type == "URL":
                     st.session_state.cached_transcripts[url] = result.content
                 else:
                     if result.error_type == "DISABLED":
-                        st.info("Transcript not available. Will transcribe audio first when you click Start.")
+                        st.info("Transcript is disabled. Will transcribe audio first when you click Start.")
                         user_input = {"type": "audio", "url": url}
                     else:
                         st.info("Transcript not available. Will transcribe audio first when you click Start.")
