@@ -38,6 +38,10 @@ with open('write_notes.md', 'r') as f:
     notes_instructions = f.read()
 notes_model = get_model(notes_instructions)
 
+with open('get_quotes.md', 'r') as f:
+    quotes_instructions = f.read()
+quotes_model = get_model(quotes_instructions)
+
 def generate_flash(prompt, model):
     try:
         # Generate content using Gemini with temperature=0
@@ -120,6 +124,7 @@ operation = st.selectbox(
         "Write Post",
         "Write Essay",
         "Write Notes",
+        "Get Quotes",
         "CUSTOM PROMPT"
     ]
 )
@@ -208,6 +213,15 @@ if start_button:
                         st.write(result)
                     else:
                         st.error("Failed to generate notes. Please refresh browser and try again.")
+            elif operation == "Get Quotes":
+                with st.spinner("Extracting quotes..."):
+                    result = generate_flash(user_input, quotes_model)
+                    if result:
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Quotes:</h3>', unsafe_allow_html=True)
+                        st.write(result)
+                    else:
+                        st.error("Failed to extract quotes. Please refresh browser and try again.")
             elif operation == "CUSTOM PROMPT":
                 if custom_prompt:
                     with st.spinner("Generating response..."):
