@@ -99,7 +99,7 @@ if input_type == "URL":
                 user_input = st.session_state.cached_transcripts[url]
             else:
                 result = get_transcript_from_url(url)
-                
+                print (result)
                 if result.success and result.content:
                     user_input = result.content
                     st.session_state.cached_transcripts[url] = result.content
