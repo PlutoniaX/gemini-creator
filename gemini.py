@@ -87,14 +87,6 @@ input_type = option_menu(
     orientation="horizontal"
 )
 
-# # Handle different input types
-# if input_type == "Upload Files":
-#     files = st.file_uploader("Upload PDF, EPUB or TXT files:", ["pdf", "epub", "txt"], accept_multiple_files=True)
-#     user_input = None
-#     if files:
-#         # Process uploaded files here
-#         pass
-
 if input_type == "URL":
     url = st.text_input("Enter YouTube or podcast URL:")
     user_input = None
@@ -147,7 +139,6 @@ custom_prompt = ""
 if operation == "CUSTOM PROMPT":
     custom_prompt = st.text_area("Enter your custom prompt:", height=100)
 
-st.write("")
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     start_button = st.button(
