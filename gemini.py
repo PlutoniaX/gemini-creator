@@ -72,6 +72,22 @@ st.markdown("""
             align-items: center;
             justify-content: center;
         }
+        
+        /* Improve visibility of option menu items */
+        .st-emotion-cache-12w0qpk {
+            background-color: #1A1F2F !important;
+            border: 1px solid #2D3548 !important;
+        }
+        
+        /* Make active/hover states more visible */
+        .st-emotion-cache-12w0qpk:hover {
+            background-color: #2D3548 !important;
+        }
+        
+        /* Ensure text is clearly visible */
+        .st-emotion-cache-12w0qpk span {
+            color: #FFFFFF !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 

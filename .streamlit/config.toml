@@ -1,6 +1,6 @@
 [theme]
 primaryColor = "#FFD700"         # Gold color to match ✨
-backgroundColor = "#111827"       # Deep navy-black
-secondaryBackgroundColor = "#1F2937"  # Slightly lighter gray
-textColor = "#F9FAFB"            # Off-white text
+backgroundColor = "#0A0F1A"       # Slightly darker navy-black for base
+secondaryBackgroundColor = "#1A1F2F"  # Lighter navy for contrast
+textColor = "#FFFFFF"            # Pure white text for better visibility
 font = "Inter"                   # Modern, clean sans-serif font
