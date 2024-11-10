@@ -61,7 +61,7 @@ def generate_flash(prompt, model):
 st.set_page_config(page_title="Vectra", page_icon=":gear:")
 local_css('style/style.css')
 
-st.markdown('<h1 style="text-align: center; padding-left: 30px;">🔮✧ Vectra ✧🔮</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="text-align: center; padding-left: 30px;">✧ Vectra ✧</h1>', unsafe_allow_html=True)
 st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">read • write • faster</h3>', unsafe_allow_html=True)
 
 # Add this near the top of your file, after the st.markdown header statements
