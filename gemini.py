@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from streamlit_option_menu import option_menu
 from yt_get_transcript import get_transcript_from_url
 from yt_download_audio import download_youtube_audio
+from styling import local_css
 
 # Load environment variables
 load_dotenv()
@@ -57,9 +58,22 @@ def generate_flash(prompt, model):
         return None
 
 # Streamlit UI
+st.set_page_config(page_title="Vectra", page_icon=":gear:")
+local_css('style/style.css')
 
 st.markdown('<h1 style="text-align: center; padding-left: 30px;">✨Vectra✨</h1>', unsafe_allow_html=True)
 st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">read • write • faster</h3>', unsafe_allow_html=True)
+
+# Add this near the top of your file, after the st.markdown header statements
+st.markdown("""
+    <style>
+        .stSpinner > div {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 st.write("")
 st.write("Pick a source:")
@@ -153,6 +167,7 @@ if start_button:
                 user_input = st.session_state.cached_transcripts[original_url]
                 st.info("Using cached transcript")
             else:
+                st.write("")
                 with st.spinner("Converting audio to text. Please be patient..."):
                     uploaded_file, safety_settings = download_youtube_audio(original_url)
                     if uploaded_file:
@@ -178,6 +193,7 @@ if start_button:
 
         if user_input:  # Continue only if we have valid input
             if operation == "Summarise Content":
+                st.write("")
                 with st.spinner("Generating summary..."):
                     result = generate_flash(user_input, summary_model)
                     if result:
@@ -187,6 +203,7 @@ if start_button:
                     else:
                         st.error("Failed to generate summary. Please refresh browser and try again.")
             elif operation == "Write Post":
+                st.write("")
                 with st.spinner("Writing post..."):
                     result = generate_flash(user_input, post_model)
                     if result:
@@ -196,6 +213,7 @@ if start_button:
                     else:
                         st.error("Failed to generate post. Please refresh browser and try again.")
             elif operation == "Write Essay":
+                st.write("")
                 with st.spinner("Writing essay..."):
                     result = generate_flash(user_input, essay_model)
                     if result:
@@ -205,6 +223,7 @@ if start_button:
                     else:
                         st.error("Failed to generate essay. Please refresh browser and try again.")
             elif operation == "Write Notes":
+                st.write("")
                 with st.spinner("Writing notes..."):
                     result = generate_flash(user_input, notes_model)
                     if result:
@@ -214,6 +233,7 @@ if start_button:
                     else:
                         st.error("Failed to generate notes. Please refresh browser and try again.")
             elif operation == "Get Quotes":
+                st.write("")
                 with st.spinner("Extracting quotes..."):
                     result = generate_flash(user_input, quotes_model)
                     if result:
@@ -224,6 +244,7 @@ if start_button:
                         st.error("Failed to extract quotes. Please refresh browser and try again.")
             elif operation == "CUSTOM PROMPT":
                 if custom_prompt:
+                    st.write("")
                     with st.spinner("Generating response..."):
                         custom_model = get_model(custom_prompt)
                         result = generate_flash(user_input, custom_model)
