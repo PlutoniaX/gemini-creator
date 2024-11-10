@@ -75,7 +75,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.write("")
 st.write("Pick a source:")
 # Input selection menu
 input_type = option_menu(
