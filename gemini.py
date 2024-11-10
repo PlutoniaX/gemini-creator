@@ -61,7 +61,7 @@ def generate_flash(prompt, model):
 st.set_page_config(page_title="Vectra", page_icon=":gear:")
 local_css('style/style.css')
 
-st.markdown('<h1 style="text-align: center; padding-left: 30px;">✨Vectra✨</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="text-align: center; padding-left: 30px;">🔮✧ Vectra ✧🔮</h1>', unsafe_allow_html=True)
 st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">read • write • faster</h3>', unsafe_allow_html=True)
 
 # Add this near the top of your file, after the st.markdown header statements
@@ -71,22 +71,6 @@ st.markdown("""
             text-align: center;
             align-items: center;
             justify-content: center;
-        }
-        
-        /* Improve visibility of option menu items */
-        .st-emotion-cache-12w0qpk {
-            background-color: #1A1F2F !important;
-            border: 1px solid #2D3548 !important;
-        }
-        
-        /* Make active/hover states more visible */
-        .st-emotion-cache-12w0qpk:hover {
-            background-color: #2D3548 !important;
-        }
-        
-        /* Ensure text is clearly visible */
-        .st-emotion-cache-12w0qpk span {
-            color: #FFFFFF !important;
         }
     </style>
 """, unsafe_allow_html=True)
