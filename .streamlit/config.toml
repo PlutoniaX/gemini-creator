@@ -1,6 +1,6 @@
 [theme]
-primaryColor = "#41A317"
-backgroundColor = "#000000"
-secondaryBackgroundColor = "#1E1E1E"
-textColor = "#E8E8E8"
-font = "sans serif"
+primaryColor = "#4F46E5"         # A modern indigo that works well in both modes
+backgroundColor = "#FAFAFA"       # Light gray-white for light mode
+secondaryBackgroundColor = "#F3F4F6"  # Slightly darker gray for contrast
+textColor = "#111827"            # Dark gray, nearly black text
+font = "Inter"                   # Modern, clean sans-serif font 
