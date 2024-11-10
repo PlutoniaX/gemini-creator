@@ -3,4 +3,4 @@ primaryColor = "#4F46E5"         # Same modern indigo
 backgroundColor = "#111827"       # Deep navy-black
 secondaryBackgroundColor = "#1F2937"  # Slightly lighter gray
 textColor = "#F9FAFB"            # Off-white text
-font = "Inter"                   # Modern, clean sans-serif font
+font = "sans serif"                   # Modern, clean sans-serif font
