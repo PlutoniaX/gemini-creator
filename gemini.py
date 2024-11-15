@@ -43,6 +43,11 @@ with open('get_quotes.md', 'r') as f:
     quotes_instructions = f.read()
 quotes_model = get_model(quotes_instructions)
 
+# Initialize extract core idea model
+with open('extract_core.md', 'r') as f:
+    extract_core_instructions = f.read()
+extract_core_model = get_model(extract_core_instructions)
+
 def generate_flash(prompt, model):
     try:
         # Generate content using Gemini with temperature=0
@@ -125,11 +130,12 @@ else:  # Enter Text
 operation = st.selectbox(
     "Choose operation:",
     [
-        "Summarise Content",
+        "Read Summary",
+        "Read Core Idea",
+        "Read Key Quotes",
+        "Write Notes",
         "Write Post",
         "Write Essay",
-        "Write Notes",
-        "Get Quotes",
         "CUSTOM PROMPT"
     ]
 )
@@ -138,7 +144,7 @@ operation = st.selectbox(
 custom_prompt = ""
 if operation == "CUSTOM PROMPT":
     custom_prompt = st.text_area("Enter your custom prompt:", height=100)
-
+st.write("")
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     start_button = st.button(
@@ -182,7 +188,7 @@ if start_button:
                         user_input = None
 
         if user_input:  # Continue only if we have valid input
-            if operation == "Summarise Content":
+            if operation == "Read Summary":
                 st.write("")
                 with st.spinner("Generating summary..."):
                     result = generate_flash(user_input, summary_model)
@@ -192,6 +198,36 @@ if start_button:
                         st.write(result)
                     else:
                         st.error("Failed to generate summary. Please refresh browser and try again.")
+            elif operation == "Read Core Idea":
+                st.write("")
+                with st.spinner("Extracting core idea..."):
+                    result = generate_flash(user_input, extract_core_model)
+                    if result:
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Core Idea:</h3>', unsafe_allow_html=True)
+                        st.write(result)
+                    else:
+                        st.error("Failed to extract core idea. Please refresh the browser and try again.")
+            elif operation == "Read Key Quotes":
+                st.write("")
+                with st.spinner("Extracting quotes..."):
+                    result = generate_flash(user_input, quotes_model)
+                    if result:
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Quotes:</h3>', unsafe_allow_html=True)
+                        st.write(result)
+                    else:
+                        st.error("Failed to extract quotes. Please refresh browser and try again.")
+            elif operation == "Write Notes":
+                st.write("")
+                with st.spinner("Writing notes..."):
+                    result = generate_flash(user_input, notes_model)
+                    if result:
+                        st.write("---")
+                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Notes:</h3>', unsafe_allow_html=True)
+                        st.write(result)
+                    else:
+                        st.error("Failed to generate notes. Please refresh browser and try again.")
             elif operation == "Write Post":
                 st.write("")
                 with st.spinner("Writing post..."):
@@ -212,26 +248,6 @@ if start_button:
                         st.write(result)
                     else:
                         st.error("Failed to generate essay. Please refresh browser and try again.")
-            elif operation == "Write Notes":
-                st.write("")
-                with st.spinner("Writing notes..."):
-                    result = generate_flash(user_input, notes_model)
-                    if result:
-                        st.write("---")
-                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Notes:</h3>', unsafe_allow_html=True)
-                        st.write(result)
-                    else:
-                        st.error("Failed to generate notes. Please refresh browser and try again.")
-            elif operation == "Get Quotes":
-                st.write("")
-                with st.spinner("Extracting quotes..."):
-                    result = generate_flash(user_input, quotes_model)
-                    if result:
-                        st.write("---")
-                        st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Quotes:</h3>', unsafe_allow_html=True)
-                        st.write(result)
-                    else:
-                        st.error("Failed to extract quotes. Please refresh browser and try again.")
             elif operation == "CUSTOM PROMPT":
                 if custom_prompt:
                     st.write("")
