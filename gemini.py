@@ -15,7 +15,7 @@ genai.configure(api_key=os.getenv('GOOGLE_GEMINI_API_KEY'))
 
 def get_model(system_instruction):
     return genai.GenerativeModel(
-        model_name='gemini-1.5-flash-latest',
+        model_name='gemini-1.5-flash-exp-0827',
         system_instruction=system_instruction,
         generation_config=genai.types.GenerationConfig(
             temperature=0
