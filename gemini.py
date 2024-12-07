@@ -15,7 +15,7 @@ genai.configure(api_key=os.getenv('GOOGLE_GEMINI_API_KEY'))
 
 def get_model(system_instruction):
     return genai.GenerativeModel(
-        model_name='gemini-exp-1206',
+        model_name='gemini-1.5-flash',
         system_instruction=system_instruction,
         generation_config=genai.types.GenerationConfig(
             temperature=0
@@ -167,7 +167,7 @@ if start_button:
                 with st.spinner("Converting audio to text. Please be patient..."):
                     uploaded_file, safety_settings = download_youtube_audio(original_url)
                     if uploaded_file:
-                        model = genai.GenerativeModel('gemini-exp-1206')
+                        model = genai.GenerativeModel('gemini-1.5-flash')
                         try:
                             response = model.generate_content(
                                 ["Generate a transcript of this audio.", uploaded_file],
