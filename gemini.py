@@ -168,20 +168,25 @@ if start_button:
                     uploaded_file, safety_settings = download_youtube_audio(original_url)
                     if uploaded_file:
                         model = genai.GenerativeModel('gemini-exp-1206')
-                        response = model.generate_content(
-                            ["Generate a transcript of this audio.", uploaded_file],
-                            safety_settings=safety_settings,
-                            generation_config=genai.types.GenerationConfig(
-                                temperature=0
+                        try:
+                            response = model.generate_content(
+                                ["Generate a transcript of this audio.", uploaded_file],
+                                safety_settings=safety_settings,
+                                generation_config=genai.types.GenerationConfig(
+                                    temperature=0
+                                )
                             )
-                        )
-                        
-                        if response.candidates:
-                            user_input = response.text
-                            # Cache the transcript using the original URL
-                            st.session_state.cached_transcripts[original_url] = user_input
-                        else:
-                            st.error("No valid response generated. Please refresh browser and try again.")
+                            
+                            if response.candidates:
+                                user_input = response.text
+                                # Cache the transcript using the original URL
+                                st.session_state.cached_transcripts[original_url] = user_input
+                            else:
+                                st.error("No valid response generated. Please refresh browser and try again.")
+                                user_input = None
+                        except Exception as e:
+                            st.error("Failed to transcribe audio. Please try again later.")
+                            print(f"Transcription error: {str(e)}")
                             user_input = None
                     else:
                         st.error("Could not process audio. Please refresh browser and try again.")
@@ -264,3 +269,4 @@ if start_button:
                     st.warning("Please enter a custom prompt first.")
     else:
         st.warning("Please enter some text first.")
+
