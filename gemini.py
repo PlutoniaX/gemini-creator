@@ -93,7 +93,7 @@ input_type = option_menu(
 )
 
 if input_type == "URL":
-    url = st.text_input("Enter YouTube or podcast URL:")
+    url = st.text_input("Enter YouTube URL:")
     user_input = None
     if url:
         # Clear cache if URL changes
