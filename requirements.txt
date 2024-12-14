@@ -4,3 +4,4 @@ google-generativeai
 streamlit-option-menu
 yt_dlp
 youtube-transcript-api
+st-copy-to-clipboard

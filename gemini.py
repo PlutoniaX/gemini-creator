@@ -6,6 +6,7 @@ from streamlit_option_menu import option_menu
 from yt_get_transcript import get_transcript_from_url
 from yt_download_audio import download_youtube_audio
 from styling import local_css
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 # Load environment variables
 load_dotenv()
@@ -201,6 +202,10 @@ if start_button:
                         st.write("---")
                         st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Summary:</h3>', unsafe_allow_html=True)
                         st.write(result)
+                        st.write("")
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col2:
+                            st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                     else:
                         st.error("Failed to generate summary. Please refresh browser and try again.")
             elif operation == "Read Core Idea":
@@ -211,6 +216,10 @@ if start_button:
                         st.write("---")
                         st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Core Idea:</h3>', unsafe_allow_html=True)
                         st.write(result)
+                        st.write("")
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col2:
+                            st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                     else:
                         st.error("Failed to extract core idea. Please refresh the browser and try again.")
             elif operation == "Read Key Quotes":
@@ -221,6 +230,10 @@ if start_button:
                         st.write("---")
                         st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Quotes:</h3>', unsafe_allow_html=True)
                         st.write(result)
+                        st.write("")
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col2:
+                            st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                     else:
                         st.error("Failed to extract quotes. Please refresh browser and try again.")
             elif operation == "Write Notes":
@@ -231,6 +244,10 @@ if start_button:
                         st.write("---")
                         st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Notes:</h3>', unsafe_allow_html=True)
                         st.write(result)
+                        st.write("")
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col2:
+                            st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                     else:
                         st.error("Failed to generate notes. Please refresh browser and try again.")
             elif operation == "Write Post":
@@ -241,6 +258,10 @@ if start_button:
                         st.write("---")
                         st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Post:</h3>', unsafe_allow_html=True)
                         st.write(result)
+                        st.write("")
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col2:
+                            st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                     else:
                         st.error("Failed to generate post. Please refresh browser and try again.")
             elif operation == "Write Essay":
@@ -251,6 +272,10 @@ if start_button:
                         st.write("---")
                         st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Essay:</h3>', unsafe_allow_html=True)
                         st.write(result)
+                        st.write("")
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col2:
+                            st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                     else:
                         st.error("Failed to generate essay. Please refresh browser and try again.")
             elif operation == "CUSTOM PROMPT":
@@ -263,6 +288,10 @@ if start_button:
                             st.write("---")
                             st.markdown('<h3 style="padding-top: 1px; padding-left: 30px; color: #808080; font-size: 25px; text-align: center;">Response:</h3>', unsafe_allow_html=True)
                             st.write(result)
+                            st.write("")
+                            col1, col2, col3 = st.columns([2, 1, 2])
+                            with col2:
+                                st_copy_to_clipboard(result, before_copy_label="Copy to Clipboard", after_copy_label="✅ Copied")
                         else:
                             st.error("Failed to generate response. Please refresh browser and try again.")
                 else:
