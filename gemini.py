@@ -64,7 +64,7 @@ def generate_flash(prompt, model):
         return None
 
 # Streamlit UI
-st.set_page_config(page_title="Vectra", page_icon=":gear:")
+st.set_page_config(page_title="Vectra", page_icon="🚀")
 local_css('style/style.css')
 
 st.markdown('<h1 style="text-align: center; padding-left: 30px;">✧ Vectra ✧</h1>', unsafe_allow_html=True)
@@ -128,6 +128,7 @@ else:  # Enter Text
     user_input = st.text_area("Enter your text here:", height=200)
 
 # Dropdown for selecting operation
+st.write("")
 operation = st.selectbox(
     "Choose operation:",
     [

@@ -1,6 +1,6 @@
 [theme]
 primaryColor = "#2E8B57"           # Slightly muted Sea Green for better contrast
-backgroundColor = "#000000"       # Pure black background
-secondaryBackgroundColor = "#0A0A0A"  # Slightly lighter black
+backgroundColor = "#121212"       # Dark gray for softer contrast
+secondaryBackgroundColor = "#1E1E1E"  # Slightly lighter gray for distinction
 textColor = "#FFFFFF"             # Bright white text for clarity
 font = "monospace"                # Hacker-style font for a clean Matrix vibe
