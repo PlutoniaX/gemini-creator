@@ -169,7 +169,7 @@ if start_button:
                 with st.spinner("Converting audio to text. Please be patient..."):
                     uploaded_file, safety_settings = download_youtube_audio(original_url)
                     if uploaded_file:
-                        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+                        model = genai.GenerativeModel('gemini-1.5-flash')
                         try:
                             response = model.generate_content(
                                 ["Generate a transcript of this audio.", uploaded_file],
